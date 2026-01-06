@@ -1,0 +1,5 @@
+{
+  "name": "LLM Training Lab: From Pretraining to RL",
+  "description": "An interactive educational platform explaining the LLM training stack, failure modes of SFT-only models, and the mechanics of Reinforcement Learning and Preference Optimization.",
+  "requestFramePermissions": []
+}
