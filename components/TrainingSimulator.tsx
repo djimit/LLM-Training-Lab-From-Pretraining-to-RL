@@ -1,48 +1,105 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
+
+// Training simulation constants
+const SIMULATION_CONFIG = {
+  UPDATE_INTERVAL_MS: 50,
+  COMPLETION_THRESHOLD: 100,
+
+  // PPO configuration
+  PPO: {
+    JITTER_PROBABILITY: 0.8,
+    JITTER_NEGATIVE: -0.5,
+    JITTER_POSITIVE: 0.3,
+    STABILITY_DROP_START: 30,
+    STABILITY_DROP_END: 70,
+    STABILITY_MIN: 40,
+    STABILITY_DROP_RATE: 2,
+  },
+
+  // DPO configuration
+  DPO: {
+    PROGRESS_INCREMENT: 1.2,
+  },
+
+  // Initial states
+  INITIAL_PROGRESS: 0,
+  INITIAL_STABILITY: 100,
+} as const;
 
 const TrainingSimulator: React.FC = () => {
   const [isTraining, setIsTraining] = useState(false);
-  const [ppoProgress, setPpoProgress] = useState(0);
-  const [dpoProgress, setDpoProgress] = useState(0);
-  const [ppoStability, setPpoStability] = useState(100);
-  const [dpoStability, setDpoStability] = useState(100);
+  const [ppoProgress, setPpoProgress] = useState(SIMULATION_CONFIG.INITIAL_PROGRESS);
+  const [dpoProgress, setDpoProgress] = useState(SIMULATION_CONFIG.INITIAL_PROGRESS);
+  const [ppoStability, setPpoStability] = useState(SIMULATION_CONFIG.INITIAL_STABILITY);
+  const [dpoStability, setDpoStability] = useState(SIMULATION_CONFIG.INITIAL_STABILITY);
 
   useEffect(() => {
-    let interval: number;
+    let interval: number | undefined;
+
     if (isTraining) {
       interval = window.setInterval(() => {
+        let bothComplete = false;
+
         setPpoProgress(prev => {
-          if (prev >= 100) return 100;
+          if (prev >= SIMULATION_CONFIG.COMPLETION_THRESHOLD) {
+            return SIMULATION_CONFIG.COMPLETION_THRESHOLD;
+          }
           // PPO is slower and jittery
-          const jitter = Math.random() > 0.8 ? -0.5 : 0.3;
-          return Math.min(100, prev + jitter);
+          const jitter = Math.random() > SIMULATION_CONFIG.PPO.JITTER_PROBABILITY
+            ? SIMULATION_CONFIG.PPO.JITTER_NEGATIVE
+            : SIMULATION_CONFIG.PPO.JITTER_POSITIVE;
+          return Math.min(SIMULATION_CONFIG.COMPLETION_THRESHOLD, prev + jitter);
         });
+
         setDpoProgress(prev => {
-          if (prev >= 100) return 100;
+          if (prev >= SIMULATION_CONFIG.COMPLETION_THRESHOLD) {
+            return SIMULATION_CONFIG.COMPLETION_THRESHOLD;
+          }
           // DPO is faster and smooth
-          return Math.min(100, prev + 1.2);
+          const newValue = Math.min(SIMULATION_CONFIG.COMPLETION_THRESHOLD, prev + SIMULATION_CONFIG.DPO.PROGRESS_INCREMENT);
+
+          // Check if both are complete
+          if (newValue >= SIMULATION_CONFIG.COMPLETION_THRESHOLD && ppoProgress >= SIMULATION_CONFIG.COMPLETION_THRESHOLD) {
+            bothComplete = true;
+          }
+
+          return newValue;
         });
 
         // Simulate PPO stability drops
         setPpoStability(prev => {
-          if (ppoProgress > 30 && ppoProgress < 70) {
-            return Math.max(40, prev - Math.random() * 2);
+          if (ppoProgress > SIMULATION_CONFIG.PPO.STABILITY_DROP_START &&
+              ppoProgress < SIMULATION_CONFIG.PPO.STABILITY_DROP_END) {
+            return Math.max(
+              SIMULATION_CONFIG.PPO.STABILITY_MIN,
+              prev - Math.random() * SIMULATION_CONFIG.PPO.STABILITY_DROP_RATE
+            );
           }
           return prev;
         });
-      }, 50);
-    }
-    return () => clearInterval(interval);
-  }, [isTraining, ppoProgress]);
 
-  const reset = () => {
+        // Auto-stop when both simulations complete
+        if (bothComplete) {
+          setIsTraining(false);
+        }
+      }, SIMULATION_CONFIG.UPDATE_INTERVAL_MS);
+    }
+
+    return () => {
+      if (interval !== undefined) {
+        clearInterval(interval);
+      }
+    };
+  }, [isTraining, ppoProgress, dpoProgress]);
+
+  const reset = useCallback(() => {
     setIsTraining(false);
-    setPpoProgress(0);
-    setDpoProgress(0);
-    setPpoStability(100);
-    setDpoStability(100);
-  };
+    setPpoProgress(SIMULATION_CONFIG.INITIAL_PROGRESS);
+    setDpoProgress(SIMULATION_CONFIG.INITIAL_PROGRESS);
+    setPpoStability(SIMULATION_CONFIG.INITIAL_STABILITY);
+    setDpoStability(SIMULATION_CONFIG.INITIAL_STABILITY);
+  }, []);
 
   return (
     <section className="py-24 px-6 bg-slate-950 text-white overflow-hidden border-y border-slate-800">

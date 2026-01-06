@@ -33,25 +33,38 @@ const SANDBOX_PRESETS = [
 ];
 
 const FailureModeSection: React.FC = () => {
-  const [selectedId, setSelectedId] = useState<string>(FAILURE_MODES[0].id);
+  const [selectedId, setSelectedId] = useState<string>(FAILURE_MODES[0]?.id ?? 'verbosity');
   const [customPrompt, setCustomPrompt] = useState('');
   const [loading, setLoading] = useState(false);
   const [sandboxResult, setSandboxResult] = useState<ComparisonResult | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const selected = FAILURE_MODES.find(f => f.id === selectedId);
 
-  const handleSandboxRun = async (overridePrompt?: string) => {
+  const handleSandboxRun = async (overridePrompt?: string): Promise<void> => {
     const promptToRun = overridePrompt || customPrompt;
-    if (!promptToRun.trim()) return;
-    
+    if (!promptToRun.trim()) {
+      setError('Please enter a prompt to test');
+      return;
+    }
+
     setCustomPrompt(promptToRun);
     setLoading(true);
+    setError(null);
+    setSandboxResult(null);
+
     try {
       const result = await analyzePrompt(promptToRun);
       setSandboxResult(result);
-      document.getElementById('sandbox-results')?.scrollIntoView({ behavior: 'smooth' });
+      setError(null);
+      // Scroll to results after a brief delay to ensure rendering
+      setTimeout(() => {
+        document.getElementById('sandbox-results')?.scrollIntoView({ behavior: 'smooth' });
+      }, 100);
     } catch (e) {
-      console.error(e);
+      const errorMessage = e instanceof Error ? e.message : 'Failed to generate simulation';
+      setError(errorMessage);
+      setSandboxResult(null);
     } finally {
       setLoading(false);
     }
@@ -164,11 +177,31 @@ const FailureModeSection: React.FC = () => {
             <button
               onClick={() => handleSandboxRun()}
               disabled={loading || !customPrompt.trim()}
-              className="w-full py-4 bg-emerald-500 text-slate-900 rounded-2xl font-black hover:bg-emerald-400 transition-all disabled:opacity-50 flex items-center justify-center gap-3 shadow-lg"
+              className="w-full py-4 bg-emerald-500 text-slate-900 rounded-2xl font-black hover:bg-emerald-400 transition-all disabled:opacity-50 flex items-center justify-center gap-3 shadow-lg disabled:cursor-not-allowed"
+              aria-label="Run simulation"
             >
               {loading ? "SIMULATING LATENT SPACE..." : "RUN SIMULATION"}
             </button>
           </div>
+
+          {error && (
+            <div className="mt-8 bg-red-900/20 border-2 border-red-500/30 rounded-2xl p-6 animate-in fade-in slide-in-from-top-4 duration-300" role="alert">
+              <div className="flex items-start gap-3">
+                <span className="text-2xl" aria-hidden="true">⚠️</span>
+                <div className="flex-1">
+                  <h3 className="text-sm font-bold text-red-300 mb-1">Simulation Error</h3>
+                  <p className="text-sm text-red-200">{error}</p>
+                </div>
+                <button
+                  onClick={() => setError(null)}
+                  className="text-red-400 hover:text-red-200 transition-colors"
+                  aria-label="Dismiss error"
+                >
+                  ✕
+                </button>
+              </div>
+            </div>
+          )}
 
           <div id="sandbox-results" className="mt-12">
             {sandboxResult && (

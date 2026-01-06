@@ -1,21 +1,33 @@
 
-import React, { useState } from 'react';
+import React, { useState, Suspense, lazy } from 'react';
 import { TrainingStage } from './types';
 import { STAGES } from './constants';
 import StageCard from './components/StageCard';
-import FailureModeSection from './components/FailureModeSection';
-import ComparisonPlayground from './components/ComparisonPlayground';
-import RLSuitabilityPlanner from './components/RLSuitabilityPlanner';
-import DPOVisualizer from './components/DPOVisualizer';
-import PipelineDeepDive from './components/PipelineDeepDive';
-import ArchitectureComparison from './components/ArchitectureComparison';
-import AlignmentTechnicalSpecs from './components/AlignmentTechnicalSpecs';
-import PromptTuningExplorer from './components/PromptTuningExplorer';
-import DecisionTree from './components/DecisionTree';
-import PipelineComparisonMatrix from './components/PipelineComparisonMatrix';
-import TrainingSimulator from './components/TrainingSimulator';
-import PipelineArchitectureFlow from './components/PipelineArchitectureFlow';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
+
+// Lazy load heavy components for better initial load performance
+const FailureModeSection = lazy(() => import('./components/FailureModeSection'));
+const ComparisonPlayground = lazy(() => import('./components/ComparisonPlayground'));
+const RLSuitabilityPlanner = lazy(() => import('./components/RLSuitabilityPlanner'));
+const DPOVisualizer = lazy(() => import('./components/DPOVisualizer'));
+const PipelineDeepDive = lazy(() => import('./components/PipelineDeepDive'));
+const ArchitectureComparison = lazy(() => import('./components/ArchitectureComparison'));
+const AlignmentTechnicalSpecs = lazy(() => import('./components/AlignmentTechnicalSpecs'));
+const PromptTuningExplorer = lazy(() => import('./components/PromptTuningExplorer'));
+const DecisionTree = lazy(() => import('./components/DecisionTree'));
+const PipelineComparisonMatrix = lazy(() => import('./components/PipelineComparisonMatrix'));
+const TrainingSimulator = lazy(() => import('./components/TrainingSimulator'));
+const PipelineArchitectureFlow = lazy(() => import('./components/PipelineArchitectureFlow'));
+
+// Loading component for Suspense fallback
+const ComponentLoader: React.FC = () => (
+  <div className="py-24 flex items-center justify-center">
+    <div className="flex flex-col items-center gap-4">
+      <div className="w-12 h-12 border-4 border-slate-200 border-t-slate-900 rounded-full animate-spin"></div>
+      <p className="text-slate-500 text-sm font-medium">Loading component...</p>
+    </div>
+  </div>
+);
 
 const App: React.FC = () => {
   const [activeStage, setActiveStage] = useState<TrainingStage>(TrainingStage.SFT);
@@ -144,41 +156,59 @@ const App: React.FC = () => {
       </section>
 
       {/* Pipeline Comparison View */}
-      <PipelineArchitectureFlow />
+      <Suspense fallback={<ComponentLoader />}>
+        <PipelineArchitectureFlow />
+      </Suspense>
 
       {/* NEW: Training Simulator */}
-      <TrainingSimulator />
+      <Suspense fallback={<ComponentLoader />}>
+        <TrainingSimulator />
+      </Suspense>
 
       {/* Complexity Breakdown Section */}
       <section className="bg-white border-y border-slate-100">
-        <PipelineDeepDive />
+        <Suspense fallback={<ComponentLoader />}>
+          <PipelineDeepDive />
+        </Suspense>
       </section>
 
       {/* NEW: Comparison Matrix (PPO vs DPO) */}
-      <PipelineComparisonMatrix />
+      <Suspense fallback={<ComponentLoader />}>
+        <PipelineComparisonMatrix />
+      </Suspense>
 
       {/* NEW: Prompt Tuning Section */}
-      <PromptTuningExplorer />
+      <Suspense fallback={<ComponentLoader />}>
+        <PromptTuningExplorer />
+      </Suspense>
 
       {/* DPO Interactive Visualization */}
       <section className="py-12 px-6">
         <div className="max-w-4xl mx-auto text-center mb-12">
           <h2 className="text-3xl font-bold text-slate-900 mb-4">The DPO Revolution</h2>
           <p className="text-slate-600 leading-relaxed">
-            Direct Preference Optimization (arXiv:2305.18290) proved that the complex PPO loop is often unnecessary. 
+            Direct Preference Optimization (arXiv:2305.18290) proved that the complex PPO loop is often unnecessary.
             By leveraging the log-probability ratios, the policy becomes its own Reward Model.
           </p>
         </div>
-        <DPOVisualizer />
+        <Suspense fallback={<ComponentLoader />}>
+          <DPOVisualizer />
+        </Suspense>
       </section>
 
-      <FailureModeSection />
+      <Suspense fallback={<ComponentLoader />}>
+        <FailureModeSection />
+      </Suspense>
 
       {/* High-Fidelity Technical Spec Comparison */}
-      <AlignmentTechnicalSpecs />
+      <Suspense fallback={<ComponentLoader />}>
+        <AlignmentTechnicalSpecs />
+      </Suspense>
 
       {/* Architecture Evolution & Complexity Comparison */}
-      <ArchitectureComparison />
+      <Suspense fallback={<ComponentLoader />}>
+        <ArchitectureComparison />
+      </Suspense>
 
       {/* Cross-Entropy vs RL Technical Explanation */}
       <section className="bg-slate-900 py-24 px-6 text-white overflow-hidden relative">
@@ -208,13 +238,19 @@ const App: React.FC = () => {
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-blue-600/10 rounded-full blur-[120px] pointer-events-none"></div>
       </section>
 
-      <ComparisonPlayground />
+      <Suspense fallback={<ComponentLoader />}>
+        <ComparisonPlayground />
+      </Suspense>
 
       {/* NEW: RL Investment Logic Section */}
-      <DecisionTree />
-      
+      <Suspense fallback={<ComponentLoader />}>
+        <DecisionTree />
+      </Suspense>
+
       {/* Updated interactive Strategy Planner */}
-      <RLSuitabilityPlanner />
+      <Suspense fallback={<ComponentLoader />}>
+        <RLSuitabilityPlanner />
+      </Suspense>
 
       <footer className="bg-white border-t border-slate-100 py-12 px-6 text-center">
         <p className="text-slate-400 text-sm italic">
