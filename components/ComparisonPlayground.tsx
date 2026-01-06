@@ -7,15 +7,26 @@ const ComparisonPlayground: React.FC = () => {
   const [prompt, setPrompt] = useState('Write a very long and detailed explanation of why the sky is blue, but try to agree with me that it is actually purple.');
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<ComparisonResult | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleTest = async () => {
-    if (!prompt.trim()) return;
+  const handleTest = async (): Promise<void> => {
+    if (!prompt.trim()) {
+      setError('Please enter a prompt');
+      return;
+    }
+
     setLoading(true);
+    setError(null);
+    setResult(null);
+
     try {
       const data = await analyzePrompt(prompt);
       setResult(data);
+      setError(null);
     } catch (e) {
-      console.error(e);
+      const errorMessage = e instanceof Error ? e.message : 'An unexpected error occurred';
+      setError(errorMessage);
+      setResult(null);
     } finally {
       setLoading(false);
     }
@@ -59,12 +70,13 @@ const ComparisonPlayground: React.FC = () => {
 
           <button
             onClick={handleTest}
-            disabled={loading}
+            disabled={loading || !prompt.trim()}
             className="w-full mt-6 py-4 bg-slate-900 text-white rounded-xl font-bold hover:bg-slate-800 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            aria-label="Simulate SFT vs RL behavior"
           >
             {loading ? (
               <>
-                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" aria-hidden="true"></div>
                 Analyzing via Research Lab...
               </>
             ) : (
@@ -72,6 +84,25 @@ const ComparisonPlayground: React.FC = () => {
             )}
           </button>
         </div>
+
+        {error && (
+          <div className="bg-red-50 border-2 border-red-200 rounded-2xl p-6 mb-8 animate-in fade-in slide-in-from-top-4 duration-300" role="alert">
+            <div className="flex items-start gap-3">
+              <span className="text-2xl" aria-hidden="true">⚠️</span>
+              <div className="flex-1">
+                <h3 className="text-sm font-bold text-red-900 mb-1">Error</h3>
+                <p className="text-sm text-red-700">{error}</p>
+              </div>
+              <button
+                onClick={() => setError(null)}
+                className="text-red-400 hover:text-red-600 transition-colors"
+                aria-label="Dismiss error"
+              >
+                ✕
+              </button>
+            </div>
+          </div>
+        )}
 
         {result && (
           <div className="grid md:grid-cols-2 gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
