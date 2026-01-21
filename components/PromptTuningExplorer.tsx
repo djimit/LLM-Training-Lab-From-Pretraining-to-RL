@@ -10,7 +10,6 @@ const PEFT_DATA = [
 
 const PromptTuningExplorer: React.FC = () => {
   const [method, setMethod] = useState<'full' | 'prompt'>('prompt');
-  const [showSoftVsHard, setShowSoftVsHard] = useState(false);
 
   const stats = {
     full: {
@@ -131,7 +130,7 @@ const PromptTuningExplorer: React.FC = () => {
                       contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)', fontSize: '10px' }}
                     />
                     <Bar dataKey="vram" name="VRAM Usage" radius={[4, 4, 0, 0]}>
-                      {PEFT_DATA.map((entry, index) => (
+                      {PEFT_DATA.map((_, index) => (
                         <Cell key={`cell-${index}`} fill={index === 2 ? '#10b981' : index === 1 ? '#3b82f6' : '#ef4444'} />
                       ))}
                     </Bar>

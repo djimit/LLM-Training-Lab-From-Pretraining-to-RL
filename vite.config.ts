@@ -6,8 +6,8 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, '.', '');
 
   // Server configuration with environment variable support
-  const serverPort = parseInt(env.VITE_PORT || '3000', 10);
-  const serverHost = env.VITE_HOST || '0.0.0.0';
+  const serverPort = parseInt(env['VITE_PORT'] || '3000', 10);
+  const serverHost = env['VITE_HOST'] || '0.0.0.0';
 
   return {
     server: {
