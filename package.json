@@ -1,12 +1,35 @@
 {
-  "name": "llm-training-lab:-from-pretraining-to-rl",
+  "name": "llm-training-lab",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
+  "description": "Interactive educational platform for understanding LLM training: from pretraining through SFT to RLHF and DPO",
+  "keywords": [
+    "llm",
+    "machine-learning",
+    "ai",
+    "education",
+    "rlhf",
+    "dpo",
+    "sft",
+    "pretraining",
+    "deep-learning"
+  ],
+  "author": "LLM Training Lab Contributors",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/djimit/LLM-Training-Lab-From-Pretraining-to-RL"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview"
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit",
+    "lint": "echo 'Add ESLint configuration for linting'"
   },
   "dependencies": {
     "recharts": "^3.6.0",
@@ -16,6 +39,8 @@
   },
   "devDependencies": {
     "@types/node": "^22.14.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
     "@vitejs/plugin-react": "^5.0.0",
     "typescript": "~5.8.2",
     "vite": "^6.2.0"

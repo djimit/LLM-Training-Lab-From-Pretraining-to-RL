@@ -4,6 +4,8 @@ import { TrainingStage } from './types';
 import { STAGES } from './constants';
 import StageCard from './components/StageCard';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
+import { ThemeToggle } from './contexts/ThemeContext';
+import { ProgressIndicator } from './contexts/ProgressContext';
 
 // Lazy load heavy components for better initial load performance
 const FailureModeSection = lazy(() => import('./components/FailureModeSection'));
@@ -18,6 +20,7 @@ const DecisionTree = lazy(() => import('./components/DecisionTree'));
 const PipelineComparisonMatrix = lazy(() => import('./components/PipelineComparisonMatrix'));
 const TrainingSimulator = lazy(() => import('./components/TrainingSimulator'));
 const PipelineArchitectureFlow = lazy(() => import('./components/PipelineArchitectureFlow'));
+const QuizSection = lazy(() => import('./components/QuizSection'));
 
 // Loading component for Suspense fallback
 const ComponentLoader: React.FC = () => (
@@ -59,12 +62,29 @@ const App: React.FC = () => {
   };
 
   const chartData = getVisualizationData();
-  const currentStage = STAGES.find(s => s.id === activeStage)!;
+  const currentStage = STAGES.find(s => s.id === activeStage);
+
+  // Type guard - this should never happen as activeStage is controlled
+  if (!currentStage) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-red-500">Invalid training stage selected</p>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 transition-colors">
+      {/* Fixed Header Controls */}
+      <div className="fixed top-4 right-4 z-50 flex items-center gap-3">
+        <div className="hidden md:block">
+          <ProgressIndicator />
+        </div>
+        <ThemeToggle />
+      </div>
+
       {/* Hero Section */}
-      <header className="bg-slate-900 text-white py-20 px-6 text-center">
+      <header className="bg-slate-900 dark:bg-slate-950 text-white py-20 px-6 text-center relative">
         <div className="max-w-4xl mx-auto">
           <div className="inline-block px-4 py-1.5 rounded-full bg-slate-800 text-slate-400 text-xs font-bold uppercase tracking-widest mb-6 border border-slate-700">
             Based on Direct Preference Optimization (DPO)
@@ -145,7 +165,7 @@ const App: React.FC = () => {
                   contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
                 />
                 <Bar dataKey="value" radius={[0, 4, 4, 0]} barSize={24}>
-                  {chartData.map((entry, index) => (
+                  {chartData.map((_, index) => (
                     <Cell key={`cell-${index}`} fill={activeStage === TrainingStage.PRETRAINING ? '#3b82f6' : activeStage === TrainingStage.SFT ? '#a855f7' : '#10b981'} />
                   ))}
                 </Bar>
@@ -252,9 +272,17 @@ const App: React.FC = () => {
         <RLSuitabilityPlanner />
       </Suspense>
 
-      <footer className="bg-white border-t border-slate-100 py-12 px-6 text-center">
-        <p className="text-slate-400 text-sm italic">
+      {/* Interactive Quiz Section */}
+      <Suspense fallback={<ComponentLoader />}>
+        <QuizSection />
+      </Suspense>
+
+      <footer className="bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800 py-12 px-6 text-center">
+        <p className="text-slate-400 dark:text-slate-500 text-sm italic">
           Technical Education Tool • Explaining LLM Training Dynamics (SFT, PPO, DPO)
+        </p>
+        <p className="text-slate-300 dark:text-slate-600 text-xs mt-2">
+          Version 1.0.0 • Open Source Educational Platform
         </p>
       </footer>
     </div>

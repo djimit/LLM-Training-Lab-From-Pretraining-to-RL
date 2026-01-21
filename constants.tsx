@@ -1,5 +1,4 @@
 
-import React from 'react';
 import { TrainingStage, FailureMode } from './types';
 
 export const STAGES = [

@@ -23,9 +23,10 @@ const DPO_CONFIG = {
 } as const;
 
 const DPOVisualizer: React.FC = () => {
-  const [beta, setBeta] = useState(DPO_CONFIG.DEFAULT_BETA);
-  const [chosenProb, setChosenProb] = useState(DPO_CONFIG.DEFAULT_CHOSEN_PROB);
-  const [rejectedProb, setRejectedProb] = useState(DPO_CONFIG.DEFAULT_REJECTED_PROB);
+  const [beta, setBeta] = useState<number>(DPO_CONFIG.DEFAULT_BETA);
+  const [chosenProb, setChosenProb] = useState<number>(DPO_CONFIG.DEFAULT_CHOSEN_PROB);
+  // rejectedProb is kept static for this visualization
+  const rejectedProb = DPO_CONFIG.DEFAULT_REJECTED_PROB;
 
   // Implicit reward calculation based on DPO paper: r(x,y) = beta * log(pi(y|x) / pi_ref(y|x))
   const chosenReward = beta * Math.log(chosenProb / DPO_CONFIG.REFERENCE_PROB);

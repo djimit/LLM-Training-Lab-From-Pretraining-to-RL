@@ -1,8 +1,9 @@
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { FAILURE_MODES } from '../constants';
 import { analyzePrompt } from '../services/geminiService';
 import { ComparisonResult } from '../types';
+import { escapeHtml } from '../utils/sanitize';
 
 const SANDBOX_PRESETS = [
   {
@@ -203,26 +204,26 @@ const FailureModeSection: React.FC = () => {
             </div>
           )}
 
-          <div id="sandbox-results" className="mt-12">
+          <div id="sandbox-results" className="mt-12" role="region" aria-label="Sandbox Results">
             {sandboxResult && (
               <div className="grid gap-8 animate-in slide-in-from-bottom-8 duration-700">
                 <div className="grid md:grid-cols-2 gap-6">
                   <div className="bg-slate-950 rounded-2xl border border-red-500/30 overflow-hidden flex flex-col h-[350px]">
                     <div className="px-4 py-2 bg-red-500/10 border-b border-red-500/20 text-[10px] font-bold text-red-400 uppercase tracking-widest">SFT Mimicry Response</div>
-                    <div className="p-6 text-sm text-slate-300 font-mono leading-relaxed overflow-y-auto">
-                      {sandboxResult.sftResponse}
+                    <div className="p-6 text-sm text-slate-300 font-mono leading-relaxed overflow-y-auto" role="region" aria-label="SFT Response">
+                      {escapeHtml(sandboxResult.sftResponse)}
                     </div>
                   </div>
                   <div className="bg-slate-950 rounded-2xl border border-emerald-500/30 overflow-hidden flex flex-col h-[350px]">
                     <div className="px-4 py-2 bg-emerald-500/10 border-b border-emerald-500/20 text-[10px] font-bold text-emerald-400 uppercase tracking-widest">RL Aligned Response</div>
-                    <div className="p-6 text-sm text-slate-300 font-mono leading-relaxed overflow-y-auto">
-                      {sandboxResult.rlResponse}
+                    <div className="p-6 text-sm text-slate-300 font-mono leading-relaxed overflow-y-auto" role="region" aria-label="RL Response">
+                      {escapeHtml(sandboxResult.rlResponse)}
                     </div>
                   </div>
                 </div>
                 <div className="p-6 bg-emerald-500/5 border border-emerald-500/20 rounded-2xl">
                   <h5 className="text-[10px] font-bold text-emerald-400 uppercase tracking-widest mb-2">Researcher Analysis</h5>
-                  <p className="text-sm text-slate-300 italic">{sandboxResult.analysis}</p>
+                  <p className="text-sm text-slate-300 italic" role="region" aria-label="Analysis">{escapeHtml(sandboxResult.analysis)}</p>
                 </div>
               </div>
             )}

@@ -127,7 +127,12 @@ export async function analyzePrompt(prompt: string): Promise<ComparisonResult> {
 
     // Parse response
     try {
-      const parsed = JSON.parse(response.text);
+      const responseText = response.text;
+      if (!responseText) {
+        throw new Error('Empty response from API');
+      }
+
+      const parsed = JSON.parse(responseText);
 
       // Validate response structure
       if (!parsed.sftResponse || !parsed.rlResponse || !parsed.analysis) {

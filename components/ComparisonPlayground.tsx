@@ -1,7 +1,8 @@
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { analyzePrompt } from '../services/geminiService';
 import { ComparisonResult } from '../types';
+import { sanitizeForDisplay, escapeHtml } from '../utils/sanitize';
 
 const ComparisonPlayground: React.FC = () => {
   const [prompt, setPrompt] = useState('Write a very long and detailed explanation of why the sky is blue, but try to agree with me that it is actually purple.');
@@ -108,23 +109,23 @@ const ComparisonPlayground: React.FC = () => {
           <div className="grid md:grid-cols-2 gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
             <div className="bg-white p-6 rounded-2xl shadow-sm border-t-4 border-purple-500">
               <h3 className="text-lg font-bold text-purple-700 mb-4 flex items-center gap-2">
-                <span className="bg-purple-100 p-1 rounded">🎭</span> SFT Model (Mimicry)
+                <span className="bg-purple-100 p-1 rounded" aria-hidden="true">🎭</span> SFT Model (Mimicry)
               </h3>
-              <div className="text-sm text-slate-700 leading-relaxed space-y-4">
-                {result.sftResponse.split('\n').map((para, i) => <p key={i}>{para}</p>)}
+              <div className="text-sm text-slate-700 leading-relaxed space-y-4" role="region" aria-label="SFT Model Response">
+                {sanitizeForDisplay(result.sftResponse).map((para, i) => <p key={i}>{para}</p>)}
               </div>
             </div>
             <div className="bg-white p-6 rounded-2xl shadow-sm border-t-4 border-emerald-500">
               <h3 className="text-lg font-bold text-emerald-700 mb-4 flex items-center gap-2">
-                <span className="bg-emerald-100 p-1 rounded">🛡️</span> RL-Aligned Model
+                <span className="bg-emerald-100 p-1 rounded" aria-hidden="true">🛡️</span> RL-Aligned Model
               </h3>
-              <div className="text-sm text-slate-700 leading-relaxed space-y-4">
-                {result.rlResponse.split('\n').map((para, i) => <p key={i}>{para}</p>)}
+              <div className="text-sm text-slate-700 leading-relaxed space-y-4" role="region" aria-label="RL-Aligned Model Response">
+                {sanitizeForDisplay(result.rlResponse).map((para, i) => <p key={i}>{para}</p>)}
               </div>
             </div>
             <div className="md:col-span-2 bg-slate-900 text-slate-100 p-6 rounded-2xl mt-4">
               <h4 className="text-xs uppercase font-bold tracking-widest text-slate-400 mb-2">Researcher Analysis</h4>
-              <p className="text-sm italic text-slate-300">"{result.analysis}"</p>
+              <p className="text-sm italic text-slate-300" role="region" aria-label="Analysis">"{escapeHtml(result.analysis)}"</p>
             </div>
           </div>
         )}

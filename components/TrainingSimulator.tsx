@@ -29,10 +29,10 @@ const SIMULATION_CONFIG = {
 
 const TrainingSimulator: React.FC = () => {
   const [isTraining, setIsTraining] = useState(false);
-  const [ppoProgress, setPpoProgress] = useState(SIMULATION_CONFIG.INITIAL_PROGRESS);
-  const [dpoProgress, setDpoProgress] = useState(SIMULATION_CONFIG.INITIAL_PROGRESS);
-  const [ppoStability, setPpoStability] = useState(SIMULATION_CONFIG.INITIAL_STABILITY);
-  const [dpoStability, setDpoStability] = useState(SIMULATION_CONFIG.INITIAL_STABILITY);
+  const [ppoProgress, setPpoProgress] = useState<number>(SIMULATION_CONFIG.INITIAL_PROGRESS);
+  const [dpoProgress, setDpoProgress] = useState<number>(SIMULATION_CONFIG.INITIAL_PROGRESS);
+  const [ppoStability, setPpoStability] = useState<number>(SIMULATION_CONFIG.INITIAL_STABILITY);
+  const [dpoStability, setDpoStability] = useState<number>(SIMULATION_CONFIG.INITIAL_STABILITY);
 
   useEffect(() => {
     let interval: number | undefined;

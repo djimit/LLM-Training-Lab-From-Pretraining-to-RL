@@ -1,15 +1,26 @@
-
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="light">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="Interactive educational platform for understanding LLM training: from pretraining to RLHF and DPO" />
+    <meta name="keywords" content="LLM, machine learning, AI, RLHF, DPO, SFT, pretraining, deep learning, education" />
+    <meta name="author" content="LLM Training Lab Contributors" />
+
+    <!-- Theme Color for mobile browsers -->
+    <meta name="theme-color" content="#f8fafc" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0f172a" media="(prefers-color-scheme: dark)" />
+
+    <!-- Open Graph / Social Media -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="LLM Training Lab: From Pretraining to RL" />
+    <meta property="og:description" content="Interactive educational platform for understanding LLM training: from pretraining to RLHF and DPO" />
 
     <!-- Security Headers -->
     <meta http-equiv="X-Content-Type-Options" content="nosniff" />
     <meta http-equiv="X-Frame-Options" content="DENY" />
     <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin" />
+    <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=()" />
 
     <!-- Content Security Policy -->
     <!-- Note: Permissive CSP required for external CDN resources (Tailwind, esm.sh) -->
@@ -25,11 +36,39 @@
       base-uri 'self';
       form-action 'self';
       frame-ancestors 'none';
+      upgrade-insecure-requests;
     " />
 
     <title>LLM Training Lab: From Pretraining to RL</title>
+
+    <!-- Tailwind CSS with dark mode support -->
     <script src="https://cdn.tailwindcss.com"></script>
-  <script type="importmap">
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            animation: {
+              'fade-in': 'fadeIn 0.5s ease-in-out',
+              'slide-up': 'slideUp 0.5s ease-out',
+            },
+            keyframes: {
+              fadeIn: {
+                '0%': { opacity: '0' },
+                '100%': { opacity: '1' },
+              },
+              slideUp: {
+                '0%': { transform: 'translateY(10px)', opacity: '0' },
+                '100%': { transform: 'translateY(0)', opacity: '1' },
+              },
+            },
+          },
+        },
+      }
+    </script>
+
+    <!-- Import Map for ES Modules -->
+    <script type="importmap">
 {
   "imports": {
     "recharts": "https://esm.sh/recharts@^3.6.0",
@@ -39,9 +78,30 @@
     "react-dom/": "https://esm.sh/react-dom@^19.2.3/"
   }
 }
-</script>
-</head>
-  <body class="bg-slate-50 text-slate-900 font-sans">
+    </script>
+
+    <!-- Preload critical resources -->
+    <link rel="preconnect" href="https://esm.sh" />
+    <link rel="preconnect" href="https://generativelanguage.googleapis.com" />
+
+    <!-- Inline script to prevent flash of wrong theme -->
+    <script>
+      (function() {
+        const stored = localStorage.getItem('llm-training-lab-theme');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const theme = stored === 'dark' || (stored === 'system' && prefersDark) || (!stored && prefersDark) ? 'dark' : 'light';
+        document.documentElement.classList.remove('light', 'dark');
+        document.documentElement.classList.add(theme);
+      })();
+    </script>
+  </head>
+  <body class="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans transition-colors">
     <div id="root"></div>
+    <noscript>
+      <div style="padding: 2rem; text-align: center; font-family: system-ui, sans-serif;">
+        <h1>JavaScript Required</h1>
+        <p>This educational platform requires JavaScript to run. Please enable JavaScript in your browser settings.</p>
+      </div>
+    </noscript>
   </body>
 </html>
