@@ -44,5 +44,8 @@
     "@vitejs/plugin-react": "^5.0.0",
     "typescript": "~5.8.2",
     "vite": "^8.1.0"
+  },
+  "overrides": {
+    "browserslist": "^4.28.7"
   }
 }
